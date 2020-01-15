@@ -10,11 +10,12 @@
         <link rel="stylesheet" href="css/qgis2web.css">
         <link rel="stylesheet" href="css/MarkerCluster.css">
         <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/Control.OSMGeocoder.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
         html, body, #map {
             width: 100%;
-            height: 100%;
+            height: 97%;
             padding: 0;
             margin: 0;
         }
@@ -22,7 +23,8 @@
         <title>CARTOGRAPHIE DE L'OFFRE NUMÉRIQUE DE LA RÉGION DE KAYES</title>
     </head>
     <body>
-        <div id="map">
+        <div id="map" style="z-index:1;">
+        <img src="https://i.ibb.co/R6kjdY8/GRDRLogo-redi.jpg" alt="GRDRLogo" border="0" style="position:fixed;bottom:0;left:40%;z-index:2;"width="200" height="60">
         </div>
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
@@ -34,15 +36,31 @@
         <script src="js/rbush.min.js"></script>
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
+        <script src="js/Control.OSMGeocoder.js"></script>
         <script src="js/leaflet-measure.js"></script>
         <script src="js/leaflet.markercluster.js"></script>
         <script src="data/Lieuxdeventeetdereparation_0.js"></script>
         <script src="data/Lieuxdereparations_1.js"></script>
         <script src="data/Lieuxdeventes_2.js"></script>
-        <script src="data/Lieuxdeconnexionsetdeformations_3.js"></script>
-        <script src="data/Lieuxdeconnexions_4.js"></script>
-        <script src="data/Lieuxdeformations_5.js"></script>
+        <script src="data/Pointsdeconnexionsetdeformations_3.js"></script>
+        <script src="data/Pointsdeconnexions_4.js"></script>
+        <script src="data/Pointsdeformations_5.js"></script>
         <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#33a02c',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#33a02c',
+                fillOpacity: 1
+              });
+            }
+        }
         var map = L.map('map', {
             zoomControl:true, maxZoom:28, minZoom:1
         })
@@ -78,6 +96,14 @@
             }
         }
         function pop_Lieuxdeventeetdereparation_0(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <th scope="row">Cercle</th>\
@@ -117,7 +143,7 @@
                     </tr>\
                     <tr>\
                         <th scope="row">Photo_Lieu</th>\
-                        <td>' + (feature.properties['Photo_Lieu'] !== null ? Autolinker.link(String(feature.properties['Photo_Lieu'])) : '') + '</td>\
+                        <td>' + (feature.properties['Photo_Lieu'] !== null ? '<img src="images/' + String(feature.properties['Photo_Lieu']).replace(/[\\\/:]/g, '_').trim() + '"width="300" height="225">' : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
@@ -149,13 +175,17 @@
                 return L.marker(latlng, style_Lieuxdeventeetdereparation_0_0(feature));
             },
         });
-        var cluster_Lieuxdeventeetdereparation_0 = new L.MarkerClusterGroup({showCoverageOnHover: false,
-            spiderfyDistanceMultiplier: 2});
-        cluster_Lieuxdeventeetdereparation_0.addLayer(layer_Lieuxdeventeetdereparation_0);
-
         bounds_group.addLayer(layer_Lieuxdeventeetdereparation_0);
-        cluster_Lieuxdeventeetdereparation_0.addTo(map);
+        map.addLayer(layer_Lieuxdeventeetdereparation_0);
         function pop_Lieuxdereparations_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <th scope="row">Cercle</th>\
@@ -195,7 +225,7 @@
                     </tr>\
                     <tr>\
                         <th scope="row">Photo_Lieu</th>\
-                        <td>' + (feature.properties['Photo_Lieu'] !== null ? Autolinker.link(String(feature.properties['Photo_Lieu'])) : '') + '</td>\
+                        <td>' + (feature.properties['Photo_Lieu'] !== null ? '<img src="images/' + String(feature.properties['Photo_Lieu']).replace(/[\\\/:]/g, '_').trim() + '"width="300" height="225">' : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
@@ -234,6 +264,14 @@
         bounds_group.addLayer(layer_Lieuxdereparations_1);
         cluster_Lieuxdereparations_1.addTo(map);
         function pop_Lieuxdeventes_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <th scope="row">Cercle</th>\
@@ -273,7 +311,7 @@
                     </tr>\
                     <tr>\
                         <th scope="row">Foto</th>\
-                        <td>' + (feature.properties['Photo_Lieu'] !== null ? Autolinker.link(String(feature.properties['Photo_Lieu'])) : '') + '</td>\
+                        <td>' + (feature.properties['Photo_Lieu'] !== null ? '<img src="images/' + String(feature.properties['Photo_Lieu']).replace(/[\\\/:]/g, '_').trim() + '"width="300" height="225">' : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
@@ -311,7 +349,15 @@
 
         bounds_group.addLayer(layer_Lieuxdeventes_2);
         cluster_Lieuxdeventes_2.addTo(map);
-        function pop_Lieuxdeconnexionsetdeformations_3(feature, layer) {
+        function pop_Pointsdeconnexionsetdeformations_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <th scope="row">Cercle</th>\
@@ -383,15 +429,15 @@
                     </tr>\
                     <tr>\
                         <th scope="row">Photo_Espa</th>\
-                        <td>' + (feature.properties['Photo_Espa'] !== null ? Autolinker.link(String(feature.properties['Photo_Espa'])) : '') + '</td>\
+                        <td>' + (feature.properties['Photo_Espa'] !== null ? '<img src="images/' + String(feature.properties['Photo_Espa']).replace(/[\\\/:]/g, '_').trim() + '"width="300" height="225">' : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
 
-        function style_Lieuxdeconnexionsetdeformations_3_0() {
+        function style_Pointsdeconnexionsetdeformations_3_0() {
             return {
-                pane: 'pane_Lieuxdeconnexionsetdeformations_3',
+                pane: 'pane_Pointsdeconnexionsetdeformations_3',
                 shape: 'triangle',
                 radius: 7.6,
                 opacity: 1,
@@ -405,28 +451,32 @@
                 fillColor: 'rgba(202,0,47,1.0)',
             }
         }
-        map.createPane('pane_Lieuxdeconnexionsetdeformations_3');
-        map.getPane('pane_Lieuxdeconnexionsetdeformations_3').style.zIndex = 403;
-        map.getPane('pane_Lieuxdeconnexionsetdeformations_3').style['mix-blend-mode'] = 'normal';
-        var layer_Lieuxdeconnexionsetdeformations_3 = new L.geoJson(json_Lieuxdeconnexionsetdeformations_3, {
+        map.createPane('pane_Pointsdeconnexionsetdeformations_3');
+        map.getPane('pane_Pointsdeconnexionsetdeformations_3').style.zIndex = 403;
+        map.getPane('pane_Pointsdeconnexionsetdeformations_3').style['mix-blend-mode'] = 'normal';
+        var layer_Pointsdeconnexionsetdeformations_3 = new L.geoJson(json_Pointsdeconnexionsetdeformations_3, {
             attribution: '<a href=""></a>',
-            pane: 'pane_Lieuxdeconnexionsetdeformations_3',
-            onEachFeature: pop_Lieuxdeconnexionsetdeformations_3,
+            pane: 'pane_Pointsdeconnexionsetdeformations_3',
+            onEachFeature: pop_Pointsdeconnexionsetdeformations_3,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.shapeMarker(latlng, style_Lieuxdeconnexionsetdeformations_3_0(feature));
+                return L.shapeMarker(latlng, style_Pointsdeconnexionsetdeformations_3_0(feature));
             },
         });
-        var cluster_Lieuxdeconnexionsetdeformations_3 = new L.MarkerClusterGroup({showCoverageOnHover: false,
-            spiderfyDistanceMultiplier: 2});
-        cluster_Lieuxdeconnexionsetdeformations_3.addLayer(layer_Lieuxdeconnexionsetdeformations_3);
-
-        bounds_group.addLayer(layer_Lieuxdeconnexionsetdeformations_3);
-        cluster_Lieuxdeconnexionsetdeformations_3.addTo(map);
-        function pop_Lieuxdeconnexions_4(feature, layer) {
+        bounds_group.addLayer(layer_Pointsdeconnexionsetdeformations_3);
+        map.addLayer(layer_Pointsdeconnexionsetdeformations_3);
+        function pop_Pointsdeconnexions_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <th scope="row">Cercle</th>\
@@ -498,15 +548,15 @@
                     </tr>\
                     <tr>\
                         <th scope="row">Photo_Espa</th>\
-                        <td>' + (feature.properties['Photo_Espa'] !== null ? Autolinker.link(String(feature.properties['Photo_Espa'])) : '') + '</td>\
+                        <td>' + (feature.properties['Photo_Espa'] !== null ? '<img src="images/' + String(feature.properties['Photo_Espa']).replace(/[\\\/:]/g, '_').trim() + '"width="300" height="225">' : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
 
-        function style_Lieuxdeconnexions_4_0() {
+        function style_Pointsdeconnexions_4_0() {
             return {
-                pane: 'pane_Lieuxdeconnexions_4',
+                pane: 'pane_Pointsdeconnexions_4',
                 shape: 'triangle',
                 radius: 7.6,
                 opacity: 1,
@@ -520,28 +570,32 @@
                 fillColor: 'rgba(0,0,255,1.0)',
             }
         }
-        map.createPane('pane_Lieuxdeconnexions_4');
-        map.getPane('pane_Lieuxdeconnexions_4').style.zIndex = 404;
-        map.getPane('pane_Lieuxdeconnexions_4').style['mix-blend-mode'] = 'normal';
-        var layer_Lieuxdeconnexions_4 = new L.geoJson(json_Lieuxdeconnexions_4, {
+        map.createPane('pane_Pointsdeconnexions_4');
+        map.getPane('pane_Pointsdeconnexions_4').style.zIndex = 404;
+        map.getPane('pane_Pointsdeconnexions_4').style['mix-blend-mode'] = 'normal';
+        var layer_Pointsdeconnexions_4 = new L.geoJson(json_Pointsdeconnexions_4, {
             attribution: '<a href=""></a>',
-            pane: 'pane_Lieuxdeconnexions_4',
-            onEachFeature: pop_Lieuxdeconnexions_4,
+            pane: 'pane_Pointsdeconnexions_4',
+            onEachFeature: pop_Pointsdeconnexions_4,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.shapeMarker(latlng, style_Lieuxdeconnexions_4_0(feature));
+                return L.shapeMarker(latlng, style_Pointsdeconnexions_4_0(feature));
             },
         });
-        var cluster_Lieuxdeconnexions_4 = new L.MarkerClusterGroup({showCoverageOnHover: false,
-            spiderfyDistanceMultiplier: 2});
-        cluster_Lieuxdeconnexions_4.addLayer(layer_Lieuxdeconnexions_4);
-
-        bounds_group.addLayer(layer_Lieuxdeconnexions_4);
-        cluster_Lieuxdeconnexions_4.addTo(map);
-        function pop_Lieuxdeformations_5(feature, layer) {
+        bounds_group.addLayer(layer_Pointsdeconnexions_4);
+        map.addLayer(layer_Pointsdeconnexions_4);
+        function pop_Pointsdeformations_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <th scope="row">Cercle</th>\
@@ -613,15 +667,15 @@
                     </tr>\
                     <tr>\
                         <th scope="row">Photo_Espa</th>\
-                        <td>' + (feature.properties['Photo_Espa'] !== null ? '<img src="images/' + String(feature.properties['Photo_Espa']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
+                        <td>' + (feature.properties['Photo_Espa'] !== null ? '<img src="images/' + String(feature.properties['Photo_Espa']).replace(/[\\\/:]/g, '_').trim() + '"width="300" height="225">' : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
 
-        function style_Lieuxdeformations_5_0() {
+        function style_Pointsdeformations_5_0() {
             return {
-                pane: 'pane_Lieuxdeformations_5',
+                pane: 'pane_Pointsdeformations_5',
                 shape: 'triangle',
                 radius: 7.6,
                 opacity: 1,
@@ -635,27 +689,23 @@
                 fillColor: 'rgba(163,232,149,1.0)',
             }
         }
-        map.createPane('pane_Lieuxdeformations_5');
-        map.getPane('pane_Lieuxdeformations_5').style.zIndex = 405;
-        map.getPane('pane_Lieuxdeformations_5').style['mix-blend-mode'] = 'normal';
-        var layer_Lieuxdeformations_5 = new L.geoJson(json_Lieuxdeformations_5, {
+        map.createPane('pane_Pointsdeformations_5');
+        map.getPane('pane_Pointsdeformations_5').style.zIndex = 405;
+        map.getPane('pane_Pointsdeformations_5').style['mix-blend-mode'] = 'normal';
+        var layer_Pointsdeformations_5 = new L.geoJson(json_Pointsdeformations_5, {
             attribution: '<a href=""></a>',
-            pane: 'pane_Lieuxdeformations_5',
-            onEachFeature: pop_Lieuxdeformations_5,
+            pane: 'pane_Pointsdeformations_5',
+            onEachFeature: pop_Pointsdeformations_5,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.shapeMarker(latlng, style_Lieuxdeformations_5_0(feature));
+                return L.shapeMarker(latlng, style_Pointsdeformations_5_0(feature));
             },
         });
-        var cluster_Lieuxdeformations_5 = new L.MarkerClusterGroup({showCoverageOnHover: false,
-            spiderfyDistanceMultiplier: 2});
-        cluster_Lieuxdeformations_5.addLayer(layer_Lieuxdeformations_5);
-
-        bounds_group.addLayer(layer_Lieuxdeformations_5);
-        cluster_Lieuxdeformations_5.addTo(map);
+        bounds_group.addLayer(layer_Pointsdeformations_5);
+        map.addLayer(layer_Pointsdeformations_5);
         var title = new L.Control();
         title.onAdd = function (map) {
             this._div = L.DomUtil.create('div', 'info');
@@ -666,8 +716,14 @@
             this._div.innerHTML = '<h2>CARTOGRAPHIE DE L\'OFFRE NUMÉRIQUE DE LA RÉGION DE KAYES</h2>';
         };
         title.addTo(map);
+        var osmGeocoder = new L.Control.OSMGeocoder({
+            collapsed: false,
+            position: 'topright',
+            text: 'Search',
+        });
+        osmGeocoder.addTo(map);
         var baseMaps = {'OSM': basemap0, 'OSM HOT': basemap1, 'OSM B&W': basemap2};
-        L.control.layers(baseMaps,{'<img src="legend/Lieuxdeformations_5.png" /> Lieux de formations': cluster_Lieuxdeformations_5,'<img src="legend/Lieuxdeconnexions_4.png" /> Lieux de connexions': cluster_Lieuxdeconnexions_4,'<img src="legend/Lieuxdeconnexionsetdeformations_3.png" /> Lieux de connexions et de formations': cluster_Lieuxdeconnexionsetdeformations_3,'<img src="legend/Lieuxdeventes_2.png" /> Lieux de ventes': cluster_Lieuxdeventes_2,'<img src="legend/Lieuxdereparations_1.png" /> Lieux de reparations': cluster_Lieuxdereparations_1,'<img src="legend/Lieuxdeventeetdereparation_0.png" /> Lieux de vente et de reparation': cluster_Lieuxdeventeetdereparation_0,},{collapsed:false}).addTo(map);
+        L.control.layers(baseMaps,{'<img src="legend/Pointsdeformations_5.png" /> Points de formations': layer_Pointsdeformations_5,'<img src="legend/Pointsdeconnexions_4.png" /> Points de connexions': layer_Pointsdeconnexions_4,'<img src="legend/Pointsdeconnexionsetdeformations_3.png" /> Points de connexions et de formations': layer_Pointsdeconnexionsetdeformations_3,'<img src="legend/Lieuxdeventes_2.png" /> Lieux de ventes': cluster_Lieuxdeventes_2,'<img src="legend/Lieuxdereparations_1.png" /> Lieux de reparations': cluster_Lieuxdereparations_1,'<img src="legend/Lieuxdeventeetdereparation_0.png" /> Lieux de vente et de reparation': layer_Lieuxdeventeetdereparation_0,},{collapsed:false}).addTo(map);
         setBounds();
         </script>
     </body>
